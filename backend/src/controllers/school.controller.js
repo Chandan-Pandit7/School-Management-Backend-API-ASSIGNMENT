@@ -13,6 +13,52 @@ export const getAllSchools = async (req, res) => {
 }
 
 
+function getDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of Earth in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+}
+
+
+// Function to get a list of schools sorted by distance from a given latitude and longitude
+export const getListSchool = async (req, res) => {
+    try {
+        const { latitude, longitude } = req.query;
+
+        if (!latitude || !longitude) {
+            return res.status(400).json({ message: "Latitude and longitude are required" });
+        }
+
+        const [schools] = await pool.execute("SELECT * FROM schools"); // table name assumed as 'schools'
+
+        const sortedSchools = schools
+            .map(school => {
+                const distance = getDistance(
+                    parseFloat(latitude),
+                    parseFloat(longitude),
+                    parseFloat(school.latitude),
+                    parseFloat(school.longitude)
+                );
+                return { ...school, distance };
+            })
+            .sort((a, b) => a.distance - b.distance);
+
+        res.status(200).json(sortedSchools);
+    } catch (error) {
+        console.error("Error fetching schools:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
+
+// Function to create a new school
 export const createSchool = async (req, res) => {
     const { name, address, latitude, longitude } = req.body;
     // console.log( name, address, latitude, longitude);
@@ -24,6 +70,7 @@ export const createSchool = async (req, res) => {
     if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
         return res.status(400).json({ error: 'Latitude must be between -90 and 90, and Longitude must be between -180 and 180' });
     }
+    
     if (typeof name !== 'string' || typeof address !== 'string') {
         return res.status(400).json({ error: 'Name and Address must be strings' });
     }
@@ -34,24 +81,35 @@ export const createSchool = async (req, res) => {
     if (latitude === 0 && longitude === 0) {
         return res.status(400).json({ error: 'Latitude and Longitude cannot both be zero' });
     }
+
     const [existingSchools] = await pool.execute(
-      'SELECT id FROM schools WHERE name = ?',
-      [name]
+      'SELECT id FROM schools WHERE name = ? and address = ?',
+      [name, address]
     );
+
     if (existingSchools.length > 0) {
         return res.status(400).json({ error: 'School with this name and address already exists' });
     }
 
     try {
         const [result] = await pool.execute('INSERT INTO schools (name, address, latitude, longitude) VALUES (?, ?, ?, ?)', [name, address, latitude, longitude]);
-        res.status(201).json({ id: result.insertId, name, address, latitude, longitude });
+        res.status(201).json({ 
+            message: 'School added successfully',
+            data: {
+                id: result.insertId,
+                name,
+                address,
+                latitude,
+                longitude
+            }
+           });
     } catch (error) {
         console.error('Error creating school:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
 
-
+// Function to get a school by ID
 export const getSchoolById = async (req, res) => {
     const { id } = req.params; // Use req.query to get the id from the query parameters
     console.log(id);
@@ -73,6 +131,7 @@ export const getSchoolById = async (req, res) => {
 }
 
 
+// Function to update a school by ID
 export const updateSchool = async (req, res) => {
     const { id } = req.params;
     const { name, address, latitude, longitude } = req.body;
@@ -91,6 +150,8 @@ export const updateSchool = async (req, res) => {
     }
 }
 
+
+// Function to delete a school by ID
 export const deleteSchool = async (req, res) => {
     const { id } = req.params;
     try {
