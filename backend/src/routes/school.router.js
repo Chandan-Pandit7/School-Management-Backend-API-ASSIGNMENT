@@ -8,11 +8,14 @@ import {
      getListSchool
     } from '../controllers/school.controller.js';
 
-
+    
+//api for assignment school
 router.post('/add-school', createSchool);
-router.get('/all-schools', getAllSchools);
 router.get('/list-school', getListSchool);
 
+
+//extra api 
+router.get('/all-schools', getAllSchools);
 router.get('/get-school/:id', getSchoolById);
 
 export default router

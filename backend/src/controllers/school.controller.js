@@ -29,9 +29,9 @@ function getDistance(lat1, lon1, lat2, lon2) {
 // Function to get a list of schools sorted by distance from a given latitude and longitude
 export const getListSchool = async (req, res) => {
     try {
-        const { latitude, longitude } = req.query;
+        const { user_latitude, user_longitude } = req.query;
 
-        if (!latitude || !longitude) {
+        if (!user_latitude || !user_longitude) {
             return res.status(400).json({ message: "Latitude and longitude are required" });
         }
 
@@ -40,8 +40,8 @@ export const getListSchool = async (req, res) => {
         const sortedSchools = schools
             .map(school => {
                 const distance = getDistance(
-                    parseFloat(latitude),
-                    parseFloat(longitude),
+                    parseFloat(user_latitude),
+                    parseFloat(user_longitude),
                     parseFloat(school.latitude),
                     parseFloat(school.longitude)
                 );
@@ -70,7 +70,7 @@ export const createSchool = async (req, res) => {
     if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
         return res.status(400).json({ error: 'Latitude must be between -90 and 90, and Longitude must be between -180 and 180' });
     }
-    
+
     if (typeof name !== 'string' || typeof address !== 'string') {
         return res.status(400).json({ error: 'Name and Address must be strings' });
     }
