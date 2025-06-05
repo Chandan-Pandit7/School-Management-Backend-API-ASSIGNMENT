@@ -2,10 +2,10 @@ import mysql2 from 'mysql2/promise';
 
 
 const pool = mysql2.createPool({
-  host: process.env.RAILWAY_HOST,
-  user: process.env.RAILWAY_DB_USER   ,
-  password: process.env.RAILWAY_DB_PASSWORD ,
-  database: process.env.RAILWAY_DB_NAME,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER   ,
+  password: process.env.DB_PASSWORD ,
+  database: process.env.DB_NAME,
   connectionLimit: 10,
   queueLimit:0,
   waitForConnections: true,
