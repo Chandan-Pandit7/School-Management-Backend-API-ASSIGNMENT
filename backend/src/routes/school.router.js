@@ -9,12 +9,16 @@ import {
     } from '../controllers/school.controller.js';
 
     
+
 //api for assignment school
+
 router.post('/add-school', createSchool);
 router.get('/list-school', getListSchool);
 
 
-//extra api 
+
+
+//extra api for school
 router.get('/all-schools', getAllSchools);
 router.get('/get-school/:id', getSchoolById);
 
