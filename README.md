@@ -82,7 +82,7 @@ Functionality:
 
     Clone the repository:
 
-git clone https://github.com/Chandan-Pandit7/express-mysql-crud-api.git
+git clone https://github.com/Chandan-Pandit7/School-Management-Backend-API-ASSIGNMENT.git
 cd /home/user/NODE-JS_ASSIGNMENT/backend
 
 Install dependencies:
@@ -122,6 +122,8 @@ Run the server:
 **👨‍💻 Author**
 
 **Chandan Pandit**
+📧 Email: 📧**pandit07chandan@gmail.com**
+☎️ Telephone: ☎️**7065958450**
 
 
 
