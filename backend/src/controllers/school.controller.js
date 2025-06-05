@@ -4,7 +4,7 @@ import { pool } from '../db/mysql.js'; // Adjust the import based on your projec
 export const getAllSchools = async (req, res) => {
     try {
         const [rows] = await pool.execute('SELECT * FROM schools');
-        console.log(rows);
+        // console.log(rows);
         res.status(200).json(rows);
     } catch (error) {
         console.error('Error fetching schools:', error);
